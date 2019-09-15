@@ -2,9 +2,7 @@ import sys
 import random
 import os
 import json
-
-with open(os.getcwd() + '/monsters.lib', 'r') as monsters:
-    monsters_informations = json.load(monsters)
+import requests
 
 
 class Player:
@@ -57,7 +55,7 @@ class Player:
             print('')
 
         if command == '1':
-            damage = random.randrange(self.player_attack, self.player_attack+3)
+            damage = random.randrange(self.player_attack, self.player_attack + 3)
             print("################################")
             print(damage, '데미지 공격')
             print("################################")
@@ -134,7 +132,8 @@ class Monster:
         self.monster_life = 30
 
     def action_turn(self):
-        damage = random.randrange(monsters_informations[self.monster_index]['minatk'], monsters_informations[self.monster_index]['maxatk'])
+        damage = random.randrange(monsters_informations[self.monster_index]['minatk'],
+                                  monsters_informations[self.monster_index]['maxatk'])
 
         print("################################")
         print(self.monster_name, ' 이 ', damage, ' 만큼 공격하였습니다.')
@@ -161,11 +160,8 @@ class Monster:
         self.monster_level = monsters_informations[monster_positions]['level']
 
 
-
-
 def validate_countinum_command(command):
-
-    if command not in('3','4'):
+    if command not in ('3', '4'):
         raise KeyError
 
 
@@ -200,6 +196,10 @@ if __name__ == '__main__':
     print('플레이어 이름을 입력해주세요.')
     player_info = Player(player_name=input())
     monster_info = Monster()
+    response = requests.get(
+        "https://gist.githubusercontent.com/kimkitae/e85de2ee375ed44948c11e2e6d573234/raw/4990e9c81cd00cce1545ad5b0c57f01be2d6dc59/Monster.lib")
+
+     monsters_informations = json.load(response.text)
     monster_info.monster_assign()
     while player_info.continue_status == True:
         player_info.action_turn()
